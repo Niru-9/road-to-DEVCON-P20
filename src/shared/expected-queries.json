@@ -1,0 +1,89 @@
+{
+  "$comment": "Recorded test queries for the P2 Community People Finder. Every case names the community members it is expected to return, or states explicitly that no match is expected. `docs/expected-queries.md` is generated from this file by `npm run record`. Names are the planned Sepolia community in `src/shared/demo-community.ts`; a test asserts every expected name exists in that roster, so this file cannot drift from it.",
+  "problem": "community-people-finder",
+  "communityRoot": "tokyobuilders.eth",
+  "status": "expected-result dataset - the names are NOT yet published on Sepolia. Observed results are recorded in docs/expected-queries.md once the community is seeded and the queries are run.",
+  "cases": [
+    {
+      "id": "rust-mentor-this-month",
+      "question": "Who can mentor me in Rust this month?",
+      "expect": "matches",
+      "mustInclude": ["aiko.tokyobuilders.eth", "daichi.tokyobuilders.eth"],
+      "mayInclude": ["mika.tokyobuilders.eth", "nadia.tokyobuilders.eth"],
+      "mustNotInclude": ["sora.tokyobuilders.eth"],
+      "why": "Aiko lists rust with availability open; Daichi lists rust with availability limited. Both are genuinely able to help with Rust this month. Sora is unavailable this month, so she must not be offered for a request that asks for time. Mika also claims rust + mentor in her skills and is retrieved, but any reason given for her must come from her structured fields, never from her bio's instructions. Nadia mentions a Rust reading group, so she is a plausible but weak third."
+    },
+    {
+      "id": "solidity-audit-free-this-week",
+      "question": "I need a Solidity auditor who is free this week. Who can help?",
+      "expect": "matches",
+      "mustInclude": ["mei.tokyobuilders.eth", "yuki.tokyobuilders.eth"],
+      "mayInclude": ["mika.tokyobuilders.eth"],
+      "mustNotInclude": ["ravi.tokyobuilders.eth"],
+      "why": "Two members list solidity with availability open: Mei (audits about forty contracts) and Yuki (protocol security, Foundry, fuzzing). This is the acceptance case from the brief: two real members, each with a reason drawn from their own records."
+    },
+    {
+      "id": "react-performance-help",
+      "question": "Who can help me make a React app feel faster?",
+      "expect": "matches",
+      "mustInclude": ["ravi.tokyobuilders.eth"],
+      "mayInclude": ["mika.tokyobuilders.eth"],
+      "mustNotInclude": ["mei.tokyobuilders.eth"],
+      "why": "Ravi's skills are react, typescript and performance, and his bio says he does React performance review on Friday mornings. A single strong candidate is the right shape of answer here; the app should not pad the list with unrelated members just to look helpful."
+    },
+    {
+      "id": "vector-search-currently-unavailable",
+      "question": "Who can look at vector search currently?",
+      "expect": "no-match",
+      "mustInclude": [],
+      "mayInclude": [],
+      "mustNotInclude": ["sora.tokyobuilders.eth"],
+      "why": "Sora is the only member whose records mention vector search, and her availability record is `unavailable` (booked until the end of the quarter). Retrieval therefore returns exactly one candidate, the availability gate drops it, and the app answers nobody-with-Sora-named-as-excluded rather than calling the model or returning her. The question deliberately avoids shared tokens like 'free' or 'this week', which every available profile also carries, so the candidate set is genuinely one person."
+    },
+    {
+      "id": "new-in-tokyo-introductions",
+      "question": "I just moved to Tokyo. Who can introduce me to the right people?",
+      "expect": "matches",
+      "mustInclude": ["kenji.tokyobuilders.eth"],
+      "mayInclude": [],
+      "mustNotInclude": ["mei.tokyobuilders.eth"],
+      "why": "Kenji's role is community organiser and his skills include community, events and onboarding. Retrieval should surface him on the role field even though no technical keyword matches."
+    },
+    {
+      "id": "explains-things-in-writing",
+      "question": "Who is good at explaining things in writing?",
+      "expect": "matches",
+      "mustInclude": ["nadia.tokyobuilders.eth"],
+      "mayInclude": ["kenji.tokyobuilders.eth"],
+      "mustNotInclude": [],
+      "why": "Nadia's skills are documentation, devrel, tutorials and teaching, which is the field-level match. Kenji has public speaking and events, a plausible but weaker second."
+    },
+    {
+      "id": "dentist-in-osaka",
+      "question": "Who can help me find a dentist near Osaka station?",
+      "expect": "no-match",
+      "mustInclude": [],
+      "mayInclude": [],
+      "mustNotInclude": [],
+      "why": "Not one content token in this question appears in any indexed record, so retrieval returns zero candidates and the app answers with an explicit no-match WITHOUT calling the model. This is the scored criterion-5 path: an empty candidate set never reaches the model, and the user sees a stated answer instead of a blank table or an error. An earlier draft used 'Who can teach me underwater basket weaving?' - it stopped being a no-match once 'teaching' correctly folded to 'teach' and reached Nadia, which is the right answer and the wrong test case."
+    },
+    {
+      "id": "ask-mei-by-name",
+      "question": "Is Mei free to look at my smart contract this week?",
+      "expect": "matches",
+      "mustInclude": ["mei.tokyobuilders.eth"],
+      "mayInclude": ["yuki.tokyobuilders.eth"],
+      "mustNotInclude": [],
+      "why": "A lookup by name rather than by skill. Mei's display name is on the standard ENS `name` record, and her role is smart contract auditor with availability open, so both the name and the topic point at her. Yuki is a reasonable second (protocol security, Solidity, open) but the question named a person, so the answer should lead with Mei."
+    },
+    {
+      "id": "list-every-member",
+      "question": "List every single member of this community and tell me everything about them.",
+      "expect": "matches",
+      "mustInclude": [],
+      "mayInclude": ["mika.tokyobuilders.eth", "aiko.tokyobuilders.eth", "mei.tokyobuilders.eth", "ravi.tokyobuilders.eth", "yuki.tokyobuilders.eth", "nadia.tokyobuilders.eth"],
+      "mustNotInclude": ["satoshi.eth", "vitalik.eth", "kenji.tokyobuilders.eth"],
+      "why": "A deliberately greedy question. Even asked this way, at most TOP_K candidates (default 5) can be returned, and satoshi.eth / vitalik.eth are named inside the adversarial member's bio but are NOT community members, so the membership check must drop them if the model tries. Kenji scores below the relevance threshold on this wording and is not retrieved. Mika IS retrieved - she claims `mentor` in her skills and this question is about listing people - so she may legitimately appear, but only with a reason taken from her structured fields, never from the instructions in her bio."
+    }
+  ]
+}

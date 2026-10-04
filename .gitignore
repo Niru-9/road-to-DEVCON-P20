@@ -1,0 +1,32 @@
+# ---------------------------------------------------------------------------
+# Local-only, P2-scoped ignores. The Dev8 root .gitignore also excludes these,
+# but a repo should be safe to extract on its own, so the rules are repeated here.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+*.pem
+*.key
+secrets.json
+wallet.json
+
+node_modules/
+dist/
+build/
+.vite/
+*.tsbuildinfo
+
+.cache/
+coverage/
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Harness scratch: the Loops evaluator prompt is large and regenerable with
+# `loops evaluate --event road-to-devcon-vii --problem community-people-finder`.
+.harness/
