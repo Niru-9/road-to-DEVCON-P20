@@ -30,3 +30,6 @@ Thumbs.db
 # Harness scratch: the Loops evaluator prompt is large and regenerable with
 # `loops evaluate --event road-to-devcon-vii --problem community-people-finder`.
 .harness/
+# Agent tooling (workspace artifacts, not needed by repo)
+.agents/
+.claude/
